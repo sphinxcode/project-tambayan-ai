@@ -3,8 +3,19 @@ import { UserCredit, Subscription, DashboardStats, UsageStats, CreditTransaction
 
 // Get current credit balance (PUBLIC ROUTE)
 export async function getCredits(): Promise<UserCredit> {
-  const response = await api.get<{ success: boolean; data: UserCredit }>('/api/public/credits/balance')
-  return response.data
+  try {
+    const response = await api.get<{ success: boolean; data: UserCredit }>('/api/public/credits/balance')
+    console.log('[getCredits] Raw API response:', response)
+
+    if (!response || !response.data) {
+      throw new Error('Invalid response from credits API')
+    }
+
+    return response.data
+  } catch (error) {
+    console.error('[getCredits] Error fetching credits:', error)
+    throw error
+  }
 }
 
 // Get credit transaction history

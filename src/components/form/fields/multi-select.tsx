@@ -89,7 +89,7 @@ export function MultiSelectField({
         className="w-full justify-between h-auto min-h-10"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex flex-wrap gap-1 py-1">
+        <div className="flex flex-wrap gap-1 py-1" suppressHydrationWarning>
           {safeValue.length === 0 ? (
             <span className="text-muted-foreground">{placeholder}</span>
           ) : (

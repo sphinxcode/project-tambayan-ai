@@ -51,10 +51,12 @@ export function RecentExecutions() {
         setIsLoading(true)
         setError(null)
         const data = await getRecentExecutions(5)
-        setExecutions(data)
+        // Ensure data is always an array
+        setExecutions(Array.isArray(data) ? data : [])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load executions')
         console.error('Error fetching executions:', err)
+        setExecutions([]) // Set empty array on error
       } finally {
         setIsLoading(false)
       }
