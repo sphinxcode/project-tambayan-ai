@@ -107,10 +107,13 @@ export function FormInterface({ tool, config }: FormInterfaceProps) {
 
   const { hasEnoughCredits, deductCredits } = useCreditStore()
 
+  // Ensure fields is always an array to prevent hydration errors
+  const safeFields = Array.isArray(formConfig.fields) ? formConfig.fields : []
+
   // Generate schema and default values
-  const schema = generateSchema(formConfig.fields)
+  const schema = generateSchema(safeFields)
   const defaultValues: Record<string, unknown> = {}
-  formConfig.fields.forEach((field) => {
+  safeFields.forEach((field) => {
     if (field.defaultValue !== undefined) {
       // Ensure multi-select default values are arrays
       if (field.type === 'multi-select') {
@@ -180,7 +183,7 @@ export function FormInterface({ tool, config }: FormInterfaceProps) {
   }
 
   // If no fields, show a message
-  if (formConfig.fields.length === 0) {
+  if (safeFields.length === 0) {
     return (
       <div className="text-center py-8">
         <p className="text-muted-foreground">
@@ -194,7 +197,7 @@ export function FormInterface({ tool, config }: FormInterfaceProps) {
     <div className="space-y-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {formConfig.fields.map((field) => (
+          {safeFields.map((field) => (
             <FormFieldRenderer
               key={field.id}
               field={field}
