@@ -28,7 +28,16 @@ export function MultiSelectField({
   placeholder = 'Select options...',
 }: MultiSelectFieldProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // Ensure value is always an array
+  const safeValue = Array.isArray(value) ? value : []
+
+  // Handle client-side mounting
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -42,14 +51,31 @@ export function MultiSelectField({
   }, [])
 
   const toggleOption = (optionValue: string) => {
-    const newValue = value.includes(optionValue)
-      ? value.filter((v) => v !== optionValue)
-      : [...value, optionValue]
+    const newValue = safeValue.includes(optionValue)
+      ? safeValue.filter((v) => v !== optionValue)
+      : [...safeValue, optionValue]
     onChange(newValue)
   }
 
   const removeOption = (optionValue: string) => {
-    onChange(value.filter((v) => v !== optionValue))
+    onChange(safeValue.filter((v) => v !== optionValue))
+  }
+
+  // Prevent hydration mismatch by not rendering interactive parts until mounted
+  if (!isMounted) {
+    return (
+      <div className="relative">
+        <Button
+          type="button"
+          variant="outline"
+          disabled
+          className="w-full justify-between h-auto min-h-10"
+        >
+          <span className="text-muted-foreground">{placeholder}</span>
+          <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </div>
+    )
   }
 
   return (
@@ -64,10 +90,10 @@ export function MultiSelectField({
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex flex-wrap gap-1 py-1">
-          {value.length === 0 ? (
+          {safeValue.length === 0 ? (
             <span className="text-muted-foreground">{placeholder}</span>
           ) : (
-            value.map((v) => {
+            safeValue.map((v) => {
               const label = options.find((o) => o.value === v)?.label
               if (!label) return null
               return (
@@ -110,7 +136,7 @@ export function MultiSelectField({
                   onClick={() => !option.disabled && toggleOption(option.value)}
                 >
                   <Checkbox
-                    checked={value.includes(option.value)}
+                    checked={safeValue.includes(option.value)}
                     disabled={option.disabled}
                     className="pointer-events-none"
                   />

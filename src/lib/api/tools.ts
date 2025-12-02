@@ -1,6 +1,5 @@
 import { api } from '../api'
 import { Tool, PaginatedResponse, ToolCategory, ToolUsage } from '@/types'
-import { createClient } from '@/lib/supabase/client'
 
 export interface GetToolsParams extends Record<string, string | number | boolean | undefined> {
   page?: number
@@ -130,66 +129,11 @@ export async function getToolRatings(toolId: string) {
   return api.get(`/api/public/tools/${toolId}/ratings`)
 }
 
-// Get recent executions - Query Supabase directly
+// Get recent executions
 export async function getRecentExecutions(limit: number = 10): Promise<ToolUsage[]> {
-  const supabase = createClient()
-
-  // Get current user
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    throw new Error('User not authenticated')
-  }
-
-  // Query tool_usage with tools joined
-  const { data, error } = await supabase
-    .from('tool_usage')
-    .select(`
-      id,
-      user_id,
-      tool_id,
-      credits_used,
-      status,
-      request_payload,
-      response_data,
-      execution_time_ms,
-      created_at,
-      tools (
-        id,
-        name,
-        description,
-        type,
-        credit_cost,
-        is_active,
-        created_at
-      )
-    `)
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(limit)
-
-  if (error) {
-    throw new Error(`Failed to fetch recent executions: ${error.message}`)
-  }
-
-  // Map database results to ToolUsage type
-  return (data || []).map((item: any) => ({
-    id: item.id,
-    userId: item.user_id,
-    toolId: item.tool_id,
-    tool: item.tools ? {
-      id: item.tools.id,
-      name: item.tools.name,
-      description: item.tools.description || '',
-      creditCost: item.tools.credit_cost || 0,
-      type: item.tools.type,
-      isActive: item.tools.is_active,
-      createdAt: item.tools.created_at,
-    } : undefined,
-    creditsUsed: item.credits_used,
-    status: item.status,
-    requestPayload: item.request_payload,
-    responseData: item.response_data,
-    executionTimeMs: item.execution_time_ms,
-    createdAt: item.created_at,
-  }))
+  const response = await api.get<{ success: boolean; data: ToolUsage[] }>(
+    '/api/public/executions',
+    { params: { limit } }
+  )
+  return response.data || []
 }
