@@ -51,6 +51,8 @@ function ToolsPageContent() {
         setCategories(cats)
       } catch (err) {
         console.error('Failed to fetch categories:', err)
+        // Set empty array as fallback to prevent crashes
+        setCategories([])
       }
     }
     fetchCategories()

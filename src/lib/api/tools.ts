@@ -104,8 +104,14 @@ export async function getToolById(id: string): Promise<Tool> {
 
 // Get tool categories (PUBLIC ROUTE)
 export async function getCategories(): Promise<ToolCategory[]> {
-  const response = await api.get<{ success: boolean; data: ToolCategory[] }>('/api/public/tools/categories')
-  return response.data || []
+  try {
+    const response = await api.get<{ success: boolean; data: ToolCategory[] }>('/api/public/tools/categories')
+    return response.data || []
+  } catch (error) {
+    console.error('Failed to fetch categories from API:', error)
+    // Return empty array as fallback
+    return []
+  }
 }
 
 // Search tools (PUBLIC ROUTE)
