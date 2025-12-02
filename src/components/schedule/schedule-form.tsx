@@ -195,7 +195,7 @@ export function ScheduleForm({
                 <FormLabel>Schedule</FormLabel>
                 <FormControl>
                   <CronBuilder
-                    value={field.value}
+                    value={field.value || ''}
                     onChange={field.onChange}
                   />
                 </FormControl>
