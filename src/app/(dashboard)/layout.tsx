@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/layout/app-sidebar"
+import { CreditProvider } from "@/components/providers/credit-provider"
 import { createClient } from "@/lib/supabase/server"
 import { getCreditsServer } from "@/lib/api/credits.server"
 
@@ -27,11 +28,13 @@ export default async function DashboardLayout({
   const credits = await getCreditsServer()
 
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <AppSidebar user={sidebarUser} credits={credits} />
-      <SidebarInset>
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
+    <CreditProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar user={sidebarUser} credits={credits} />
+        <SidebarInset>
+          {children}
+        </SidebarInset>
+      </SidebarProvider>
+    </CreditProvider>
   )
 }
