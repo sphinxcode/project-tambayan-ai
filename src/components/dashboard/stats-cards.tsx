@@ -126,10 +126,9 @@ export function StatsCards() {
       />
       <StatCard
         title="Success Rate"
-        value="98%"
-        description="Based on recent runs"
+        value={`${stats?.successRate || 0}%`}
+        description="Based on this month's runs"
         icon={<TrendingUp className="h-4 w-4" />}
-        trend={{ value: 2.5, isPositive: true }}
       />
     </div>
   )

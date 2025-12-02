@@ -313,6 +313,7 @@ export interface DashboardStats {
   toolsRunThisMonth: number
   creditsUsedThisMonth: number
   availableTools: number
+  successRate: number
 }
 
 // Usage Stats
