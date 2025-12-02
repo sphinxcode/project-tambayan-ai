@@ -27,12 +27,9 @@ export function DashboardHeader({ breadcrumbs = [] }: DashboardHeaderProps) {
       <Separator orientation="vertical" className="mr-2 h-4" />
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
-          </BreadcrumbItem>
           {breadcrumbs.map((item, index) => (
             <BreadcrumbItem key={index}>
-              <BreadcrumbSeparator />
+              {index > 0 && <BreadcrumbSeparator />}
               {item.href ? (
                 <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
               ) : (

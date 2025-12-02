@@ -40,55 +40,21 @@ const statusConfig: Record<UsageStatus, { icon: React.ReactNode; variant: 'defau
   },
 }
 
-// Generate mock data for demo purposes
-function generateMockExecutions(): ToolUsage[] {
-  const tools = [
-    { id: '1', name: 'AI Writer', icon: 'pen' },
-    { id: '2', name: 'Image Generator', icon: 'image' },
-    { id: '3', name: 'Code Assistant', icon: 'code' },
-    { id: '4', name: 'Data Analyzer', icon: 'chart' },
-    { id: '5', name: 'Email Composer', icon: 'mail' },
-  ]
-  const statuses: UsageStatus[] = ['SUCCESS', 'SUCCESS', 'SUCCESS', 'FAILED', 'PENDING']
-
-  return Array.from({ length: 5 }, (_, i) => {
-    const tool = tools[i % tools.length]
-    const hoursAgo = Math.floor(Math.random() * 48)
-    return {
-      id: `exec-${i}`,
-      userId: 'user-1',
-      toolId: tool.id,
-      tool: {
-        id: tool.id,
-        name: tool.name,
-        description: '',
-        creditCost: Math.floor(Math.random() * 5) + 1,
-        type: 'FORM' as const,
-        createdAt: new Date().toISOString(),
-      },
-      creditsUsed: Math.floor(Math.random() * 5) + 1,
-      status: statuses[i % statuses.length],
-      requestPayload: null,
-      responseData: null,
-      executionTimeMs: Math.floor(Math.random() * 5000) + 500,
-      createdAt: new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString(),
-    }
-  })
-}
-
 export function RecentExecutions() {
   const [executions, setExecutions] = useState<ToolUsage[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchExecutions() {
       try {
         setIsLoading(true)
+        setError(null)
         const data = await getRecentExecutions(5)
-        setExecutions(data.length > 0 ? data : generateMockExecutions())
+        setExecutions(data)
       } catch (err) {
-        console.warn('Using mock executions:', err)
-        setExecutions(generateMockExecutions())
+        setError(err instanceof Error ? err.message : 'Failed to load executions')
+        console.error('Error fetching executions:', err)
       } finally {
         setIsLoading(false)
       }
@@ -122,6 +88,22 @@ export function RecentExecutions() {
     )
   }
 
+  if (error) {
+    return (
+      <Card className="col-span-3">
+        <CardHeader>
+          <CardTitle>Recent Executions</CardTitle>
+          <CardDescription>Your latest tool runs and their status</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-muted-foreground">
+            <p>{error}</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="col-span-3">
       <CardHeader>
@@ -129,38 +111,44 @@ export function RecentExecutions() {
         <CardDescription>Your latest tool runs and their status</CardDescription>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tool</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Credits</TableHead>
-              <TableHead className="text-right">Time</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {executions.map((execution) => {
-              const status = statusConfig[execution.status]
-              return (
-                <TableRow key={execution.id}>
-                  <TableCell className="font-medium">
-                    {execution.tool?.name || 'Unknown Tool'}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={status.variant} className="gap-1">
-                      {status.icon}
-                      {status.label}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">{execution.creditsUsed}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    {formatDistanceToNow(new Date(execution.createdAt), { addSuffix: true })}
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+        {executions.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>No executions yet. Try running a tool to see your history here.</p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tool</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Credits</TableHead>
+                <TableHead className="text-right">Time</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {executions.map((execution) => {
+                const status = statusConfig[execution.status]
+                return (
+                  <TableRow key={execution.id}>
+                    <TableCell className="font-medium">
+                      {execution.tool?.name || 'Unknown Tool'}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={status.variant} className="gap-1">
+                        {status.icon}
+                        {status.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">{execution.creditsUsed}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {formatDistanceToNow(new Date(execution.createdAt), { addSuffix: true })}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   )

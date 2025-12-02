@@ -2,7 +2,6 @@ import { cookies } from "next/headers"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { createClient } from "@/lib/supabase/server"
-import { getCredits } from "@/lib/api/credits"
 
 export default async function DashboardLayout({
   children,
@@ -23,11 +22,18 @@ export default async function DashboardLayout({
     avatarUrl: user.user_metadata?.avatar_url || null,
   } : null
 
-  // Fetch actual credits from API
+  // Fetch actual credits from Supabase
   let credits = 0
   try {
-    const creditData = await getCredits()
-    credits = creditData.balance
+    if (user) {
+      const { data: creditData } = await supabase
+        .from('user_credits')
+        .select('balance')
+        .eq('user_id', user.id)
+        .single()
+
+      credits = creditData?.balance || 0
+    }
   } catch (error) {
     console.error('Failed to fetch credits:', error)
   }
