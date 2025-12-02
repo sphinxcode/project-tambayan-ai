@@ -47,7 +47,23 @@ const defaultConfig: ChatConfig = {
 }
 
 export function ChatInterface({ tool, config }: ChatInterfaceProps) {
-  const chatConfig = config || defaultConfig
+  // Merge config with defaults to ensure all properties exist
+  const chatConfig: ChatConfig = {
+    chat: {
+      welcomeMessage: config?.chat?.welcomeMessage || defaultConfig.chat.welcomeMessage,
+      placeholderText: config?.chat?.placeholderText || defaultConfig.chat.placeholderText,
+      quickActions: config?.chat?.quickActions || defaultConfig.chat.quickActions,
+    },
+    features: {
+      voiceInput: config?.features?.voiceInput || defaultConfig.features.voiceInput,
+      fileUpload: config?.features?.fileUpload || defaultConfig.features.fileUpload,
+      streaming: config?.features?.streaming || defaultConfig.features.streaming,
+    },
+    payloads: {
+      messageKey: config?.payloads?.messageKey || defaultConfig.payloads.messageKey,
+      sessionKey: config?.payloads?.sessionKey || defaultConfig.payloads.sessionKey,
+    },
+  }
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const [message, setMessage] = useState('')
   const scrollAreaRef = useRef<HTMLDivElement>(null)
