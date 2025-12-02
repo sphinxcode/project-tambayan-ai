@@ -52,10 +52,6 @@ export function MultiSelectField({
     onChange(value.filter((v) => v !== optionValue))
   }
 
-  const selectedLabels = value
-    .map((v) => options.find((o) => o.value === v)?.label)
-    .filter(Boolean)
-
   return (
     <div ref={containerRef} className="relative">
       {/* Trigger */}
@@ -71,20 +67,24 @@ export function MultiSelectField({
           {value.length === 0 ? (
             <span className="text-muted-foreground">{placeholder}</span>
           ) : (
-            selectedLabels.map((label, index) => (
-              <Badge
-                key={value[index]}
-                variant="secondary"
-                className="gap-1"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  removeOption(value[index])
-                }}
-              >
-                {label}
-                <X className="h-3 w-3 cursor-pointer" />
-              </Badge>
-            ))
+            value.map((v) => {
+              const label = options.find((o) => o.value === v)?.label
+              if (!label) return null
+              return (
+                <Badge
+                  key={v}
+                  variant="secondary"
+                  className="gap-1"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    removeOption(v)
+                  }}
+                >
+                  {label}
+                  <X className="h-3 w-3 cursor-pointer" />
+                </Badge>
+              )
+            })
           )}
         </div>
         <ChevronDown
