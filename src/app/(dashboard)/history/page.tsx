@@ -95,9 +95,13 @@ export default function HistoryPage() {
           pageSize,
           status: statusFilter !== 'all' ? statusFilter : undefined,
         })
-        setExecutions(response.data || [])
-        setTotalPages(response.totalPages || 1)
-        setTotal(response.total || 0)
+        // Handle response structure: response.data.executions is the array
+        const executionsData = Array.isArray(response.data)
+          ? response.data
+          : (response.data?.executions || [])
+        setExecutions(executionsData)
+        setTotalPages(response.data?.totalPages || response.totalPages || 1)
+        setTotal(response.data?.total || response.total || 0)
       } catch (err) {
         console.error('Failed to fetch executions:', err)
         setExecutions([])
