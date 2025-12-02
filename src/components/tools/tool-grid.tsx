@@ -35,6 +35,9 @@ function ToolCardSkeleton() {
 }
 
 export function ToolGrid({ tools, isLoading }: ToolGridProps) {
+  // Ensure tools is always an array to prevent hydration errors
+  const safeTools = Array.isArray(tools) ? tools : []
+
   if (isLoading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -45,7 +48,7 @@ export function ToolGrid({ tools, isLoading }: ToolGridProps) {
     )
   }
 
-  if (tools.length === 0) {
+  if (safeTools.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <div className="h-16 w-16 rounded-full bg-pink-100 flex items-center justify-center mb-4">
@@ -61,7 +64,7 @@ export function ToolGrid({ tools, isLoading }: ToolGridProps) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {tools.map((tool) => (
+      {safeTools.map((tool) => (
         <ToolCard key={tool.id} tool={tool} />
       ))}
     </div>

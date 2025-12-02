@@ -22,6 +22,9 @@ export function CategoryPills({
   const [showLeftArrow, setShowLeftArrow] = useState(false)
   const [showRightArrow, setShowRightArrow] = useState(false)
 
+  // Ensure categories is always an array to prevent hydration errors
+  const safeCategories = Array.isArray(categories) ? categories : []
+
   // Check scroll position to show/hide arrows
   const checkScrollPosition = () => {
     const container = scrollRef.current
@@ -37,7 +40,7 @@ export function CategoryPills({
     checkScrollPosition()
     window.addEventListener('resize', checkScrollPosition)
     return () => window.removeEventListener('resize', checkScrollPosition)
-  }, [categories])
+  }, [safeCategories])
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollRef.current
@@ -53,7 +56,7 @@ export function CategoryPills({
 
   const allCategories = [
     { id: 'all', name: 'All Tools', slug: 'all', description: null, icon: null, sortOrder: 0, isActive: true },
-    ...categories,
+    ...safeCategories,
   ]
 
   return (

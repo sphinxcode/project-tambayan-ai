@@ -221,7 +221,7 @@ export default function ToolDetailPage({ params }: ToolDetailPageProps) {
                 </div>
 
                 {/* Categories */}
-                {tool.categories && tool.categories.length > 0 && (
+                {tool.categories && Array.isArray(tool.categories) && tool.categories.length > 0 && (
                   <div className="pt-4 border-t">
                     <p className="text-sm font-medium mb-2">Categories</p>
                     <div className="flex flex-wrap gap-1">
