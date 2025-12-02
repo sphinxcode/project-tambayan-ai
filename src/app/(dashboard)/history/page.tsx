@@ -98,10 +98,10 @@ export default function HistoryPage() {
         // Handle response structure: response.data.executions is the array
         const executionsData = Array.isArray(response.data)
           ? response.data
-          : (response.data?.executions || [])
+          : ((response.data as { executions?: ToolUsage[] })?.executions || [])
         setExecutions(executionsData)
-        setTotalPages(response.data?.totalPages || response.totalPages || 1)
-        setTotal(response.data?.total || response.total || 0)
+        setTotalPages((response.data as { totalPages?: number })?.totalPages || response.totalPages || 1)
+        setTotal((response.data as { total?: number })?.total || response.total || 0)
       } catch (err) {
         console.error('Failed to fetch executions:', err)
         setExecutions([])

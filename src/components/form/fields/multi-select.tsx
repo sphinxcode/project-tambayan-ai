@@ -16,7 +16,7 @@ interface Option {
 
 interface MultiSelectFieldProps {
   options: Option[]
-  value: string[]
+  value: string[] | unknown
   onChange: (value: string[]) => void
   placeholder?: string
 }
@@ -31,8 +31,13 @@ export function MultiSelectField({
   const [isMounted, setIsMounted] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Ensure value is always an array
-  const safeValue = Array.isArray(value) ? value : []
+  // Ensure value is always an array - handle all edge cases
+  const safeValue: string[] = (() => {
+    if (Array.isArray(value)) return value
+    if (value === null || value === undefined) return []
+    if (typeof value === 'string') return value ? [value] : []
+    return []
+  })()
 
   // Handle client-side mounting
   useEffect(() => {

@@ -38,7 +38,7 @@ export function FormFieldRenderer({ field, form }: FormFieldRendererProps) {
       <input
         type="hidden"
         {...form.register(field.payloadKey)}
-        value={field.defaultValue || ''}
+        value={String(field.defaultValue || '')}
       />
     )
   }
@@ -144,8 +144,17 @@ export function FormFieldRenderer({ field, form }: FormFieldRendererProps) {
             <FormControl>
               <MultiSelectField
                 options={field.options || []}
-                value={(formField.value as string[]) || []}
-                onChange={formField.onChange}
+                value={
+                  Array.isArray(formField.value)
+                    ? formField.value
+                    : formField.value
+                    ? [String(formField.value)]
+                    : []
+                }
+                onChange={(newValue) => {
+                  // Ensure we always pass an array
+                  formField.onChange(Array.isArray(newValue) ? newValue : [])
+                }}
                 placeholder={field.placeholder}
               />
             </FormControl>

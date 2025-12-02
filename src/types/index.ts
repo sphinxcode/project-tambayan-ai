@@ -223,7 +223,7 @@ export interface FormField {
     maxLength?: number
   }
   htmlContent?: string
-  defaultValue?: string
+  defaultValue?: string | string[] | boolean | number
 }
 
 export interface FormStep {

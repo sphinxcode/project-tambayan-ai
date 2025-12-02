@@ -112,7 +112,18 @@ export function FormInterface({ tool, config }: FormInterfaceProps) {
   const defaultValues: Record<string, unknown> = {}
   formConfig.fields.forEach((field) => {
     if (field.defaultValue !== undefined) {
-      defaultValues[field.payloadKey] = field.defaultValue
+      // Ensure multi-select default values are arrays
+      if (field.type === 'multi-select') {
+        if (Array.isArray(field.defaultValue)) {
+          defaultValues[field.payloadKey] = field.defaultValue
+        } else if (typeof field.defaultValue === 'string' && field.defaultValue) {
+          defaultValues[field.payloadKey] = [field.defaultValue]
+        } else {
+          defaultValues[field.payloadKey] = []
+        }
+      } else {
+        defaultValues[field.payloadKey] = field.defaultValue
+      }
     } else if (field.type === 'checkbox') {
       defaultValues[field.payloadKey] = false
     } else if (field.type === 'multi-select') {
