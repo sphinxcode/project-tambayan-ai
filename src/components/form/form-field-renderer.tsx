@@ -144,17 +144,8 @@ export function FormFieldRenderer({ field, form }: FormFieldRendererProps) {
             <FormControl>
               <MultiSelectField
                 options={field.options || []}
-                value={
-                  Array.isArray(formField.value)
-                    ? formField.value
-                    : formField.value
-                    ? [String(formField.value)]
-                    : []
-                }
-                onChange={(newValue) => {
-                  // Ensure we always pass an array
-                  formField.onChange(Array.isArray(newValue) ? newValue : [])
-                }}
+                value={formField.value}
+                onChange={formField.onChange}
                 placeholder={field.placeholder}
               />
             </FormControl>
