@@ -2,6 +2,7 @@ import { cookies } from "next/headers"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { createClient } from "@/lib/supabase/server"
+import { getCredits } from "@/lib/api/credits"
 
 export default async function DashboardLayout({
   children,
@@ -22,8 +23,14 @@ export default async function DashboardLayout({
     avatarUrl: user.user_metadata?.avatar_url || null,
   } : null
 
-  // TODO: Fetch credits from API in Phase 2
-  const credits = 500
+  // Fetch actual credits from API
+  let credits = 0
+  try {
+    const creditData = await getCredits()
+    credits = creditData.balance
+  } catch (error) {
+    console.error('Failed to fetch credits:', error)
+  }
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
