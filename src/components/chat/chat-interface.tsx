@@ -258,7 +258,7 @@ export function ChatInterface({ tool, config }: ChatInterfaceProps) {
   const showWelcome = !currentSession || messages.length === 0
 
   return (
-    <div className="flex flex-col h-[600px]">
+    <div className="flex flex-col h-full">
       {/* Session Tabs */}
       {sessions.length > 0 && (
         <SessionTabs

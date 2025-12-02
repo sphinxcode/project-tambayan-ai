@@ -239,12 +239,12 @@ export default function ToolDetailPage({ params }: ToolDetailPageProps) {
 
           {/* Tool Interface */}
           <div className="lg:col-span-2">
-            <Card className="h-full">
+            <Card className="h-full flex flex-col">
               <CardHeader>
                 <CardTitle>{typeConfig.label}</CardTitle>
                 <CardDescription>{typeConfig.description}</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 overflow-hidden">
                 {tool.type === 'FORM' && (
                   <FormInterface
                     tool={tool}
